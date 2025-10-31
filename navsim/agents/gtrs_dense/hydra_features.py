@@ -71,7 +71,7 @@ class HydraFeatureBuilder(AbstractFeatureBuilder):
             features["camera_feature_right"] = self._get_camera_feature_single(agent_input, 'right')
 
         ego_status_list = []
-        for i in range(self._config.num_ego_status):
+        for i in range(2):
             idx = -(i + 1)
 
             ego_status = torch.concatenate(

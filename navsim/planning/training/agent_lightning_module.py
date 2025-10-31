@@ -32,6 +32,7 @@ from navsim.agents.dp.dp_agent import DPAgent
 from navsim.agents.gtrs_dense.gtrs_agent import GTRSAgent
 from navsim.agents.gtrs_dense.hydra_features import state2traj
 from navsim.agents.transfuser.transfuser_agent import TransfuserAgent
+from navsim.agents.ztrs.ztrs_agent import ZTRSAgent
 from navsim.common.dataclasses import Trajectory
 from navsim.evaluate.pdm_score import transform_trajectory, get_trajectory_as_array
 
@@ -64,14 +65,21 @@ class AgentLightningModule(pl.LightningModule):
         :param logging_prefix: prefix where to log step
         :return: scalar loss
         """
-        features, targets, tokens = batch
+        if len(batch) == 4:
+            features, targets, tokens, prev_ego_state = batch
+        else:
+            features, targets, tokens = batch
+            prev_ego_state = None
 
         prediction = self.agent.forward(features)
 
         if isinstance(self.agent, TransfuserAgent):
             loss, loss_dict = self.agent.compute_loss(features, targets, prediction)
         else:
-            loss, loss_dict = self.agent.compute_loss(features, targets, prediction, tokens)
+            if prev_ego_state is not None:
+                loss, loss_dict = self.agent.compute_loss(features, targets, prediction, tokens, prev_ego_state)
+            else:
+                loss, loss_dict = self.agent.compute_loss(features, targets, prediction, tokens)
 
         for k, v in loss_dict.items():
             self.log(f"{logging_prefix}/{k}", v, on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
@@ -108,7 +116,7 @@ class AgentLightningModule(pl.LightningModule):
     ):
         if self.combined:
             return self.predict_step_combined(batch, batch_idx)
-        if isinstance(self.agent, GTRSAgent):
+        if isinstance(self.agent, GTRSAgent) or isinstance(self.agent, ZTRSAgent):
             return self.predict_step_hydra(batch, batch_idx)
         elif isinstance(self.agent, DPAgent):
             return self.predict_step_dp_traj(batch, batch_idx)
@@ -192,12 +200,14 @@ class AgentLightningModule(pl.LightningModule):
             batch_idx: int
     ):
         features, targets, tokens = batch
+        policy_key = 'rl' if isinstance(self.agent, ZTRSAgent) else 'imi'
+
         self.agent.eval()
         with torch.no_grad():
             predictions = self.agent.forward(features)
             poses = predictions["trajectory"].cpu().numpy()
 
-            imis = predictions["imi"].softmax(-1).log().cpu().numpy()
+            imis = predictions[policy_key].softmax(-1).log().cpu().numpy()
             no_at_fault_collisions_all = predictions["no_at_fault_collisions"].sigmoid().log().cpu().numpy()
             drivable_area_compliance_all = predictions["drivable_area_compliance"].sigmoid().log().cpu().numpy()
             time_to_collision_within_bound_all = predictions[

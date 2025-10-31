@@ -46,12 +46,12 @@ mkdir traj_pdm_v2; cd traj_pdm_v2;
 mkdir ori; cd ori;
 wget https://huggingface.co/Zzxxxxxxxx/gtrs/resolve/main/navtrain_8192.pkl
 wget https://huggingface.co/Zzxxxxxxxx/gtrs/resolve/main/navtrain_16384.pkl
-# ground-truths with data augmentations
-cd ../; mkdir random_aug; cd random_aug;
-wget https://huggingface.co/Zzxxxxxxxx/gtrs/resolve/main/rot_30-trans_0-va_0-p_0.5-ensemble.json
-wget https://huggingface.co/Zzxxxxxxxx/gtrs/resolve/main/aug_traj_pdm.zip
-unzip aug_traj_pdm.zip
-rm aug_traj_pdm.zip
+# simulated ego status of the vocabulary for calculating EC violations
+cd ../; mkdir sim_states_16384_navtrain; cd sim_states_16384_navtrain;
+for i in {1..17}; do
+  wget https://huggingface.co/Zzxxxxxxxx/ZTRS/resolve/main/sim_states_part_${i}.tar
+  tar -xvf sim_states_part_${i}.tar
+done
 ```
 
 Execute the following script to download the pretrained vision backbones:
