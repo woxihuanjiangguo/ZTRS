@@ -5,7 +5,6 @@
 ### [arXiv](https://arxiv.org/abs/2510.24108)
 
 This is the official repository of ZTRS, the first end-to-end planning framework that uses rule-based rewards instead of human demonstrations for training.
-Code will be available soon!
 
 ## Getting Started
 Please refer to [install.md](docs/install.md) for downloading the dataset and installing the devkit.
