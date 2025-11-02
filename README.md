@@ -19,6 +19,17 @@ Please refer to [install.md](docs/install.md) for downloading the dataset and in
 Please refer to [ztrs_training.md](docs/ztrs_training.md) and [ztrs_inference.md](docs/ztrs_inference.md) respectively.
 [simulation.md](docs/gtrs_simulation.md) provides instructions on collecting your own trajectory statistics.
 
+## Citation
+If you find our work useful, consider citing our paper with
+```
+@article{li2025ztrs,
+  title={ZTRS: Zero-Imitation End-to-end Autonomous Driving with Trajectory Scoring},
+  author={Li, Zhenxin and Yao, Wenhao and Wang, Zi and Sun, Xinglong and Chen, Jingde and Chang, Nadine and Shen, Maying and Song, Jingyu and Wu, Zuxuan and Lan, Shiyi and others},
+  journal={arXiv preprint arXiv:2510.24108},
+  year={2025}
+}
+```
+
 ## Acknowledgement
 Many thanks to the following great open-source repositories:
 + [NAVSIM](https://github.com/autonomousvision/navsim)
