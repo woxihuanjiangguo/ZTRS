@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Project page for ZTRS: Zero-Human Demonstration End-to-End Autonomous Driving with Trajectory Scorer."
+    />
+    <title>ZTRS | Zero-Human Demonstration End-to-End Autonomous Driving</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <h1>Zero-Human Demonstration End-to-End Autonomous Driving with Trajectory Scorer</h1>
+
+        <p class="authors">
+          <strong>Zhenxin Li<sup>1,&dagger;</sup>, Nadine Chang<sup>2</sup>, Wenhao Yao<sup>1</sup>, Xinglong Sun<sup>2</sup>, Zi Wang<sup>2</sup>, Maying Shen<sup>2</sup></strong><br />
+          <strong>Jingde Chen<sup>2</sup>, Jingyu Song<sup>3</sup>, Kailin Li<sup>4</sup>, Zuxuan Wu<sup>1</sup>, Shiyi Lan<sup>2</sup>, Jose M. Alvarez<sup>2</sup></strong><br />
+          <span><sup>1</sup>Fudan University &nbsp;&nbsp; <sup>2</sup>NVIDIA &nbsp;&nbsp; <sup>3</sup>University of Michigan &nbsp;&nbsp; <sup>4</sup>East China Normal University</span>
+          <span class="note"><sup>&dagger;</sup>Work done during an internship at NVIDIA.</span>
+        </p>
+
+        <div class="actions" aria-label="Project links">
+          <a class="button" href="https://arxiv.org/abs/2510.24108">arxiv</a>
+          <a class="button secondary" href="https://github.com/woxihuanjiangguo/ZTRS">Code</a>
+          <a class="button secondary" href="#bibtex">BibTeX</a>
+        </div>
+      </section>
+
+      <section id="abstract" class="content-section section-narrow">
+        <h2 class="section-title">Abstract</h2>
+        <p>Human demonstrations are widely considered the cornerstone of end-to-end (E2E) autonomous driving despite human demonstration's scarcity for long-tail and safety-critical scenarios. Nonetheless, current E2E autonomous driving (AD) training paradigms continue to rely on human demonstrations. Imitation learning (IL) requires human demonstrations for training, whereas reinforcement learning (RL) has emerged as a promising alternative to reduce this dependency. However, most existing RL methods for E2E AD still rely implicitly on human demonstrations. A pure rewards-based RL method can overcome the need for human demonstrations, but general RL policy gradient methods suffer from the cold-start problem. </p>
+
+        <p>In this paper, we propose <span class="keyword-highlight">ZTRS (Zero-human demonstration end-to-end autonomous driving with TRajectory Scorer)</span> — a complete RL-based E2E planning paradigm trained solely on real-world images and rule-based rewards, entirely without human demonstration. Through our proposed <span class="keyword-highlight">Exhaustive Policy Optimization (EPO)</span>, a policy gradient variant tailored for enumerable trajectory actions and dense supervision, ZTRS enables the model to generalize better to long-tail driving scenarios. We demonstrate this generalization through our SOTA performance against IL approaches on both long-tail Navhard and closed-loop HUGSIM datasets.</p>
+      </section>
+
+      <section id="motivation" class="content-section section-wide">
+        <h2 class="section-title">Motivation</h2>
+        <p class="motivation-text">
+          End-to-end planners trained with imitation learning inherit the limits of human demonstrations, especially when long-tail and safety-critical behaviors are rare. Existing RL-style approaches reduce this dependency only partially: pretraining still keeps exploration biased towards human trajectories, while training a model from scratch is prone to cold-start failure.</p>
+        <figure class="plain-figure">
+          <img
+            src="assets/teaser.jpg"
+            alt="Motivation diagram comparing imitation learning, existing reinforcement learning, and ZTRS with exhaustive policy optimization."
+          />
+        </figure>
+      </section>
+
+      <section id="method" class="content-section section-wide">
+        <h2 class="section-title">Method Overview</h2>
+
+        <div class="method-grid">
+          <article>
+            <div class="step-heading">
+              <span>1</span>
+              <h3>Tokenize Sensor Inputs and Trajectories</h3>
+            </div>
+            <p>
+              A frontal-view image backbone extracts image tokens, while a trajectory tokenizer
+              embeds each candidate action from the fixed vocabulary.
+            </p>
+          </article>
+          <article>
+            <div class="step-heading">
+              <span>2</span>
+              <h3>Score Candidate Trajectories</h3>
+            </div>
+            <p>
+              Transformer decoder layers let trajectory tokens attend to image tokens before policy
+              and scoring heads estimate likelihoods and rule-based metric scores.
+            </p>
+          </article>
+          <article>
+            <div class="step-heading">
+              <span>3</span>
+              <h3>Exhaustive Policy Optimization (EPO)</h3>
+            </div>
+            <p>
+              EPO evaluates all trajectories for each offline state, avoiding biased exploration and cold-start issues.
+            </p>
+          </article>
+          <article>
+            <div class="step-heading">
+              <span>4</span>
+              <h3>Rule-Based Rewards</h3>
+            </div>
+            <p>
+              The reward signal uses EPDMS-style metrics for safety, progress, comfort, lane
+              keeping, traffic lights, and drivable-area compliance.
+            </p>
+          </article>
+        </div>
+
+        <figure class="plain-figure">
+          <img
+            src="assets/arch.jpg"
+            alt="Architecture diagram showing the trajectory vocabulary, sensor image backbone, Transformer decoder, scoring heads, and policy head."
+          />
+        </figure>
+      </section>
+
+      <section id="results" class="content-section section-wide">
+        <h2 class="section-title">Results</h2>
+        <p class="section-intro">
+          On the challenging closed-loop HUGSIM benchmark, ZTRS plans robust trajectories in long-tail, safety-critical interactions without closed-loop training or human demonstrations.
+        </p>
+        <div class="video-grid" aria-label="HUGSIM closed-loop driving examples">
+          <article>
+            <video src="assets/video_oncoming_trimmed.mp4" autoplay loop muted playsinline controls></video>
+            <p>Oncoming traffic: ZTRS keeps a safe path while handling an opposing vehicle in a constrained scene.</p>
+          </article>
+          <article>
+            <video src="assets/video_overtake_trimmed.mp4" autoplay loop muted playsinline controls></video>
+            <p>Overtaking: ZTRS completes a cautious maneuver around a parked obstacle.</p>
+          </article>
+          <article>
+            <video src="assets/video_rogue_trimmed.mp4" autoplay loop muted playsinline controls></video>
+            <p>Rogue agent: ZTRS reacts to an aggressive traffic participant and preserves a safer trajectory.</p>
+          </article>
+        </div>
+
+        <p class="section-intro video-intro">
+          In nominal scenarios, ZTRS follows long-horizon road structure similarly to human
+          trajectories. In complex interactions, it can choose different but safer plans, such as
+          leaving more lateral clearance or decelerating for cut-in behavior.
+        </p>
+        <p class="visual-caption">
+          <span class="legend-item"><span class="legend-dot selected"></span>Selected trajectory</span>
+          <span class="legend-item"><span class="legend-dot human"></span>Human trajectory</span>
+        </p>
+        <figure class="plain-figure">
+          <img
+            src="assets/viz_navsim.jpg"
+            alt="Navtest visualization showing planned trajectories in path following, lane changing, cautious driving, and dynamic interaction scenarios."
+          />
+        </figure>
+      </section>
+
+      <section id="bibtex" class="content-section section-narrow">
+        <h2 class="section-title">BibTeX</h2>
+        <pre><code>@article{li2025ztrs,
+  title={Ztrs: Zero-imitation end-to-end autonomous driving with trajectory scoring},
+  author={Li, Zhenxin and Yao, Wenhao and Wang, Zi and Sun, Xinglong and Chen, Jingde and Chang, Nadine and Shen, Maying and Song, Jingyu and Wu, Zuxuan and Lan, Shiyi and others},
+  journal={arXiv preprint arXiv:2510.24108},
+  year={2025}
+}</code></pre>
+      </section>
+    </main>
+
+  </body>
+</html>
