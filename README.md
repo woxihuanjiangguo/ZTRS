@@ -1,8 +1,9 @@
-# ZTRS: Zero-Imitation End-to-end Autonomous Driving with Trajectory Scoring
+# ZTRS: Zero-Imitation End-to-end Autonomous Driving with Trajectory Scoring (ECCV 26)
 
 ![](./assets/ztrs.png)
 
-### [arXiv](https://arxiv.org/abs/2510.24108)
+### [arXiv](https://arxiv.org/abs/2510.24108) | [Project Page](https://zhenxinli.net/ZTRS/)
+
 
 This is the official repository of ZTRS, the first end-to-end planning framework that uses rule-based rewards instead of human demonstrations for training.
 
